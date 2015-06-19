@@ -54,6 +54,7 @@ namespace OraControl
                         " DIRECTORY=dmpdir DUMPFILE=" + schema + "-Backup.DMP logfile=" +
                         schema + "-Backup.log tablespaces=" + schema;
             fileName = filePath + "export.bat";
+            // Create folder dirdump in oracle
             File.WriteAllText(fileName, cmdString);
 
             if (username == string.Empty)
@@ -71,12 +72,18 @@ namespace OraControl
 
             if (isReady)
             {
-                string output = "Start Exporting \"" + username + " from:   " + oracleDB + "......\n\r";
-                tbOutput.Text = output;
+                string output = "Start Exporting \"" + username + " from:   (" + oracleDB.ToUpper() + ")\r\n";
+                tbOutput.AppendText(output);
                 var proc = Process.Start(fileName);
                 proc.WaitForExit();
-                output = "Extraction Coplete!";
+                output = "\r\nExtraction Coplete!";
                 tbOutput.AppendText(output);
+
+                // Clearing textboxes
+                txtUsername.Text = string.Empty;
+                txtPassword.Text = string.Empty;
+                txtOracleDB.Text = string.Empty;
+                txtSchema.Text = string.Empty;
             }
         }
 
@@ -140,11 +147,46 @@ namespace OraControl
             //tbOutput.Text += proc.StandardOutput.ReadLine();
             string s = proc.StandardOutput.ReadToEnd();
             tbOutput.Text = s;
+            
+        }
+
+        private void btnCreateUser_Click(object sender, EventArgs e)
+        {
+            string scriptString, tablespace, size, autoExtend = "";
+
+            //CREATE USER user IDENTIFIED BY password  DEFAULT TABLESPACE ts  QUOTA xxM ON ts  TEMPORARY TABLESPACE temp PROFILE DEFAULT;
+            // GRANT CREATE SESSION, RESOURCE, CONNECT TO TEST;
         }
 
         private void txtSize_KeyPress(object sender, KeyPressEventArgs e)
         {
             e.Handled = !char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar);
+        }
+
+        private async void btnSendCommand_Click(object sender, EventArgs e)
+        {
+            ProcessStartInfo psi = new ProcessStartInfo("sqlplus");
+            psi.UseShellExecute = false;
+            psi.CreateNoWindow = false;
+            psi.RedirectStandardInput = true;
+            psi.RedirectStandardOutput = true;
+            psi.RedirectStandardError = true;
+            Process proc = Process.Start(psi);
+
+            await proc.StandardInput.WriteLineAsync(tbCommands.Text);
+            //await proc.StandardInput.WriteLineAsync("exit");
+
+            //string s = proc.BeginOutputReadLine(); 
+            tbOutput.Text = await proc.StandardOutput.ReadToEndAsync();
+            
+
+        }
+
+        private void lnkDisconnect_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            this.Hide();
+            Connect connect = new Connect();
+            connect.Show();
         }
     }
 }
