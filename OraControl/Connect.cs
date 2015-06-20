@@ -30,5 +30,40 @@ namespace OraControl
                 }
             }
         }
+
+        private void btnConnect_Click(object sender, EventArgs e)
+        {
+            OraControl oc = new OraControl();
+            try
+            {
+                oc.connUsername = tbUsernameCon.Text;
+                oc.connPasswrod = tbPasswordCon.Text;
+                oc.connTNS = tbTnsName.Text;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            if (oc.connUsername == string.Empty || oc.connPasswrod == string.Empty || oc.connTNS == string.Empty)
+            {
+                MessageBox.Show("Please make sure you typed all values");
+            } else
+            {
+                oc.Show();
+                this.Hide();
+            }
+        }
+
+        private void Connect_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.ExitThread(); 
+            Application.Exit();
+        }
+
+        private void logoPictureBox_Click(object sender, EventArgs e)
+        {
+            About about = new About();
+            about.ShowDialog();
+        }
     }
 }

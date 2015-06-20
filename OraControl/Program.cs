@@ -16,7 +16,7 @@ namespace OraControl
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new OraControl());
+            Application.Run(new /*OraControl()*/ Connect());
         }
     }
 }
